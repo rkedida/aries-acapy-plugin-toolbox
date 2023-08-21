@@ -1,0 +1,52 @@
+version: "3"
+services:
+  custom-tunnel-alice:
+    image: dbluhm/agent-tunnel
+    command: -s custom-agent-alice:3000 -p 4041 -h ${AGENT_TUNNEL_HOST}
+  custom-agent-alice:
+    image: acapy-toolbox
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./acapy-endpoint.sh:/acapy-endpoint.sh:ro,z
+      - ./configs:/home/indy/configs:ro,z
+    environment:
+      TUNNEL_ENDPOINT: http://custom-tunnel-alice:4041
+      ACAPY_TOOLBOX_LOG_LEVEL: INFO
+    ports:
+      - "3005:3005"
+    entrypoint: >
+      /bin/sh -c '/acapy-endpoint.sh aca-py "$$@"' --
+    command: start --arg-file ./configs/custom-alice.yml
+
+  custom-tunnel-bob:
+    image: dbluhm/agent-tunnel
+    command: -s custom-agent-bob:3002 -p 4042 -h ${AGENT_TUNNEL_HOST}
+  custom-agent-bob:
+    image: acapy-toolbox
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./acapy-endpoint.sh:/acapy-endpoint.sh:ro,z
+      - ./configs:/home/indy/configs:ro,z
+    environment:
+      TUNNEL_ENDPOINT: http://custom-tunnel-bob:4042
+      ACAPY_TOOLBOX_LOG_LEVEL: INFO
+    ports:
+      - "3007:3007"
+    entrypoint: >
+      /bin/sh -c '/acapy-endpoint.sh aca-py "$$@"' --
+    command: start --arg-file ./configs/custom-bob.yml
+
+  custom-tails-server:
+    image: dbluhm/indy-tails-server:latest
+    ports:
+      - 6545:6545
+    command: >
+      tails-server
+        --host 0.0.0.0
+        --port 6545
+        --storage-path ${STORAGE_PATH:-/tmp/tails-files}
+        --log-level ${LOG_LEVEL:-DEBUG}

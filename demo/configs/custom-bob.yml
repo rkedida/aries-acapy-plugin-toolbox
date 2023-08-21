@@ -1,0 +1,65 @@
+# Customized ACA-Py configuration for Bob
+
+# Personalized Label & Wallet
+label: CustomBob
+invite-label: CustomBob (Admin)
+wallet-name: custom-bob-wallet
+
+# Endpoints Configuration
+# Using localhost:3002 for both HTTP and WS protocols as the primary endpoint for Bob
+endpoint:
+  - http://localhost:3002
+  - ws://localhost:3002
+
+# Inbound transport and admin configurations
+inbound-transport:
+  - [acapy_plugin_toolbox.http_ws, 0.0.0.0, 3002]
+admin: [0.0.0.0, 3003]
+
+# Plugins Configuration
+# Loading toolbox plugin to extend functionality
+plugin:
+  - acapy_plugin_toolbox
+
+# Transport settings (Outbound)
+outbound-transport: http
+
+# Ledger settings
+# Using Indicio TestNet for this demo
+genesis-url: https://raw.githubusercontent.com/Indicio-tech/indicio-network/main/genesis_files/pool_transactions_testnet_genesis
+
+# Admin settings
+admin-insecure-mode: true
+
+# Connection settings
+# Debugging options and auto-acceptance for streamlined demo experience
+debug-connections: true
+debug-credentials: true
+debug-presentations: true
+auto-accept-invites: true
+auto-accept-requests: true
+auto-ping-connection: true
+connections-invite: true
+invite-metadata-json: '{"group": "admin"}'
+
+# Credential and Presentation settings
+# Storing credential and presentation records for reference and auto-responding for smooth workflow
+preserve-exchange-records: true
+auto-store-credential: true
+auto-respond-credential-proposal: true
+auto-respond-credential-offer: true
+auto-respond-credential-request: true
+auto-respond-presentation-proposal: true
+auto-respond-presentation-request: true
+auto-verify-presentation: false   # Manually verify presentations
+
+tails-server-base-url: http://tails-server:6543
+
+# Wallet Configuration
+wallet-type: indy
+wallet-key: "insecure, for use in demo only"
+auto-provision: true
+
+# Additional configurations
+# Enabling undelivered queue for communication over http instead of websocket
+enable-undelivered-queue: true
